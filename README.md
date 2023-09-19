@@ -21,7 +21,7 @@
 # 💥 Dependency
 - [ox_inventory](https://github.com/overextended/ox_inventory)
 - [ox_target](https://github.com/overextended/ox_target)
-- [rprogress]([https://github.com/overextended/oxmysql](https://github.com/Mobius1/rprogress))
+- [rprogress](https://github.com/Mobius1/rprogress)
 
 # 🎬 Video
 [Youtube]([https://youtu.be/hc5h93AZcXU](https://youtu.be/y6uEAt_Nytk)https://youtu.be/y6uEAt_Nytk)
