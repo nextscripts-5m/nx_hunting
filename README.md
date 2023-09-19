@@ -24,4 +24,4 @@
 - [rprogress](https://github.com/Mobius1/rprogress)
 
 # 🎬 Video
-[Youtube]([https://youtu.be/hc5h93AZcXU](https://youtu.be/y6uEAt_Nytk)https://youtu.be/y6uEAt_Nytk)
+[Youtube](https://youtu.be/y6uEAt_Nytk)
