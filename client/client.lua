@@ -162,9 +162,9 @@ local spawnAnimals = function (huntZones, zone)
                         distance = 1.7,
                         item = Config.Item,
                         onSelect = Hunt,
-                        canInteract = function ()
+                        canInteract = function (entity, distance, coords, name, bone)
                             -- 1 - melee, 2 - explosive, 3 - any other
-                            return IsPedArmed(PlayerPedId(), 1)
+                            return IsPedArmed(PlayerPedId(), 1) and IsEntityDead(entity)
                         end,
                     })
 
@@ -330,7 +330,7 @@ OnStart = function (entity)
     -- animal
     if IsEntityDead(entity) then
         ClearPedTasksImmediately(entity)
-        FreezeEntityPosition(entity, true)
+        -- FreezeEntityPosition(entity, true)
     else
         return false
     end
