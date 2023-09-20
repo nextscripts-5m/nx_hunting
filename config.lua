@@ -2,6 +2,11 @@ Config = {}
 
 Config.Debug = true
 
+--[[
+    you can choose between "ox_lib" and "rprogress"
+]]
+Config.Progress = "rprogress"
+
 Config.MINUTE = 60 * 1000
 Config.SECONDS = 1000
 

@@ -65,74 +65,13 @@ Hunt = function (data)
     -- remove from the spawned animal npc's table
     removeFromTable(AnimalsNPC, data.entity)
 
-    exports.rprogress:Custom({
-        canCancel = true,
-        cancelKey = 178,
-        duration = 2000,
-        y = 0.7,
-        Label = 'Hunting..',
-        Color = "rgba(255, 255, 255, 1.0)",
-        onStart = function ()
+    if Config.Progress == "ox_lib" then
+        LibProgressConfiguration(data.entity)
+    elseif Config.Progress == "rprogress" then
+        RProgressConfiguration(data.entity)
+    end
 
-            -- animal
-            if not IsEntityDead(data.entity) then
-                ClearPedTasksImmediately(data.entity)
-                FreezeEntityPosition(data.entity, true)
-            end
 
-            -- hunter
-            FreezeEntityPosition(PlayerPedId(), true)
-            DisableControlAction(2, 32, true )
-            DisableControlAction(2, 33, true )
-            DisableControlAction(2, 34, true )
-            DisableControlAction(2, 35, true )
-
-            local dict = 'mini@repair'
-            local flag = 'fixing_a_ped'
-
-            RequestAnimDict(dict)
-            while not HasAnimDictLoaded(dict) do
-                Wait(0)
-            end
-
-            RequestAnimSet( "move_ped_crouched" )
-            while ( not HasAnimSetLoaded( "move_ped_crouched" ) ) do
-                Wait(0)
-            end
-
-            SetPedMovementClipset(PlayerPedId(), "move_ped_crouched", 1)
-            TaskPlayAnim(PlayerPedId(), dict, flag, 8.0, 8.0 , 8000, 16, 1, false, false, false)
-
-        end,
-
-        onComplete = function ()
-
-            -- animal
-            SetEntityHealth(data.entity, 0)
-            FreezeEntityPosition(data.entity, false)
-
-            --hunter
-            ClearPedTasks(PlayerPedId())
-            DisableControlAction(2, 32, false ) -- W
-            DisableControlAction(2, 33, false ) -- A
-            DisableControlAction(2, 34, false ) -- S
-            DisableControlAction(2, 35, false ) -- D
-            FreezeEntityPosition(PlayerPedId(), false)
-            ResetPedMovementClipset(PlayerPedId(), 0)
-
-            if Config.Debug then
-                print(Lang["hunted"]:format(data.entity))
-            end
-
-            -- get the loots for that specific animal
-            local loots =  Config.Zones[animalZone].Animals[animalID].loots
-            -- we choose a random loot
-            local loot = loots[math.random(1, #loots)]
-            -- get a random quantity
-            local count = math.random(0, 4)
-            TriggerServerEvent('giveInventoryItem', loot, count)
-        end
-    })
 end
 
 ---Create the map blip for the entity
@@ -172,8 +111,6 @@ local spawnAnimals = function (huntZones, zone)
 
             if not (#AnimalsNPC > Config.MaxEntities) then
 
-                sleep = Config.SECONDS * 1
-
                 for k, v in pairs(Animals) do
 
                     if handleRarity(v.rarity) then
@@ -182,7 +119,8 @@ local spawnAnimals = function (huntZones, zone)
                             print(Lang["not-spawning"]:format(v.model))
                         end
 
-                        Wait(Config.SECONDS * 15)
+                        sleep = Config.SECONDS * 5
+                        Wait(sleep)
                         goto continue
                     end
 
@@ -352,7 +290,109 @@ local pickRandomElements = function (Table, Count)
     return _table
 end
 
-RegisterCommand('attira', function ()
+---ox_lib configuration
+---@param entity number entity number
+LibProgressConfiguration = function (entity)
+    if OnStart(entity) then
+        if lib.progressCircle({
+            duration = 4000,
+            label = "Hunting..",
+            canCancel = true,
+            useWhileDead = false,
+            allowCuffed = false,
+        }) then
+            Complete(entity)
+        end
+    end
+end
+
+---rprogress configuration
+---@param entity number entity number
+RProgressConfiguration = function (entity)
+    exports.rprogress:Custom({
+        canCancel = true,
+        cancelKey = 178,
+        Duration = 4000,
+        y = 0.7,
+        Label = 'Hunting..',
+        Color = "rgba(255, 255, 255, 1.0)",
+        onStart = function ()
+            OnStart(entity)
+        end,
+
+        onComplete = function ()
+            Complete(entity)
+        end
+    })
+end
+
+OnStart = function (entity)
+    -- animal
+    if IsEntityDead(entity) then
+        ClearPedTasksImmediately(entity)
+        FreezeEntityPosition(entity, true)
+    else
+        return false
+    end
+
+    -- hunter
+    FreezeEntityPosition(PlayerPedId(), true)
+    DisableControlAction(2, 32, true )
+    DisableControlAction(2, 33, true )
+    DisableControlAction(2, 34, true )
+    DisableControlAction(2, 35, true )
+
+    local dict = 'mini@repair'
+    local flag = 'fixing_a_ped'
+
+    RequestAnimDict(dict)
+    while not HasAnimDictLoaded(dict) do
+        Wait(0)
+    end
+
+    RequestAnimSet( "move_ped_crouched" )
+    while ( not HasAnimSetLoaded( "move_ped_crouched" ) ) do
+        Wait(0)
+    end
+
+    SetPedMovementClipset(PlayerPedId(), "move_ped_crouched", 1)
+    TaskPlayAnim(PlayerPedId(), dict, flag, 8.0, 8.0 , 8000, 16, 1, false, false, false)
+
+    return true
+end
+
+---On Complete Function
+---@param entity number entity number
+Complete = function (entity)
+    -- animal
+    SetEntityHealth(entity, 0)
+    FreezeEntityPosition(entity, false)
+
+    --hunter
+    ClearPedTasks(PlayerPedId())
+    DisableControlAction(2, 32, false ) -- W
+    DisableControlAction(2, 33, false ) -- A
+    DisableControlAction(2, 34, false ) -- S
+    DisableControlAction(2, 35, false ) -- D
+    FreezeEntityPosition(PlayerPedId(), false)
+    ResetPedMovementClipset(PlayerPedId(), 0)
+
+    if Config.Debug then
+        print(Lang["hunted"]:format(entity))
+    end
+
+    -- get the loots for that specific animal
+    local loots =  Config.Zones[animalZone].Animals[animalID].loots
+    -- we choose a random loot
+    local loot = loots[math.random(1, #loots)]
+    -- get a random quantity
+    local count = math.random(0, 4)
+    TriggerServerEvent('giveInventoryItem', loot, count)
+end
+
+--- Commands
+
+RegisterCommand('charm', function ()
     if isInArea then
         charmedAnimals = pickRandomElements(AnimalsNPC, math.random(0, #AnimalsNPC))
         for k, v in pairs(charmedAnimals) do
@@ -367,11 +407,10 @@ RegisterCommand('attira', function ()
         charmedAnimals = {}
     end
 end, false)
+RegisterKeyMapping('charm', 'Charm animals', 'keyboard', 'b')
 
-RegisterKeyMapping('attira', 'Attira animali', 'keyboard', 'b')
 
-
----Handle the timer
+-- Handle the timer
 Citizen.CreateThread(function ()
     while true do
         Wait(1000)
@@ -383,14 +422,15 @@ Citizen.CreateThread(function ()
     end
 end)
 
-RegisterCommand('sensoriale', function ()
+RegisterCommand('radar', function ()
     if isInArea then
         displayRadar = not displayRadar
         DisplayRadar(displayRadar)
     end
 end, false)
-RegisterKeyMapping('sensoriale', 'Attiva il sensoriale', 'keyboard', 'u')
+RegisterKeyMapping('radar', 'Enable radar', 'keyboard', 'u')
 
+-- Events
 
 RegisterNetEvent('esx:playerLoaded',function()
     configureZones(Config.Zones)
