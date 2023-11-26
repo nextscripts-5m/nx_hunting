@@ -1,5 +1,8 @@
 Config = {}
 
+-- You can choose between "esx" or "qb"
+Config.Framework = "esx"
+
 Config.Debug = true
 
 --[[

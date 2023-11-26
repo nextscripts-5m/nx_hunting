@@ -1,3 +1,18 @@
+PlayerLoaded = function()
+    ConfigureZones(Config.Zones)
+    ConfigureBlips(Config.Debug, Config.Zones)
+end
+
+if Config.Framework == "esx" then
+    RegisterNetEvent("esx:playerLoaded", PlayerLoaded)
+elseif Config.Framework == "qb" then
+    RegisterNetEvent("QBCore:Client:OnPlayerLoaded", PlayerLoaded)
+else
+    print("Unsopported Framework")
+    return
+end
+
+
 local isInArea              = false
 -- it contains zone animals
 local Animals               = {}
@@ -205,7 +220,7 @@ end
 
 ---Handle the distance between hunting zones
 ---@param huntZones table table containing hunting zones
-local configureZones = function (huntZones)
+ConfigureZones = function (huntZones)
 
     for zone, postalCode in pairs(huntZones) do
         lib.zones.sphere({
@@ -239,7 +254,7 @@ end
 ---Blip configuraton
 ---@param configureBlip boolean debug mode
 ---@param huntZones table 
-local configureBlips = function (configureBlip, huntZones)
+ConfigureBlips = function (configureBlip, huntZones)
 
     if configureBlip then
         for k, zone in pairs(huntZones) do
@@ -251,7 +266,7 @@ local configureBlips = function (configureBlip, huntZones)
 
             local blip = AddBlipForCoord(zone.position)
 
-            SetBlipSprite (blip, zone.Blip.sprite)
+            SetBlipSprite(blip, zone.Blip.sprite)
             SetBlipDisplay(blip, 4)
             SetBlipScale  (blip, 0.9)
             SetBlipColour (blip, zone.Blip.color)
@@ -429,10 +444,3 @@ RegisterCommand('radar', function ()
     end
 end, false)
 RegisterKeyMapping('radar', 'Enable radar', 'keyboard', 'u')
-
--- Events
-
-RegisterNetEvent('esx:playerLoaded',function()
-    configureZones(Config.Zones)
-    configureBlips(Config.Debug, Config.Zones)
-end)
