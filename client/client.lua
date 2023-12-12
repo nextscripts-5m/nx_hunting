@@ -1,6 +1,11 @@
+local loaded    = false
+
 PlayerLoaded = function()
+
+    if loaded then return end
     ConfigureZones(Config.Zones)
     ConfigureBlips(Config.Debug, Config.Zones)
+    loaded = true
 end
 
 if Config.Framework == "esx" then
@@ -72,6 +77,7 @@ Hunt = function (data)
 
     for k, v in pairs(AnimalsNPC) do
         if v.npcEntity == data.entity then
+            animalID = v.name
             RemoveBlip(v.blip)
         end
     end
@@ -162,12 +168,13 @@ local spawnAnimals = function (huntZones, zone)
                     SetBlockingOfNonTemporaryEvents(animalNPC, true)
 
                     table.insert(AnimalsNPC, {
-                        npcEntity = animalNPC,
-                        npcCoords = coords,
-                        blip = blip
+                        npcEntity   = animalNPC,
+                        npcCoords   = coords,
+                        blip        = blip,
+                        name        = k
                     })
 
-                    animalID = k
+                    -- animalID = k
                     animalZone = zone
 
                     exports.ox_target:addLocalEntity(animalNPC, {
@@ -344,7 +351,7 @@ end
 OnStart = function (entity)
     -- animal
     if IsEntityDead(entity) then
-        ClearPedTasksImmediately(entity)
+        -- ClearPedTasksImmediately(entity)
         -- FreezeEntityPosition(entity, true)
     else
         return false
@@ -381,7 +388,7 @@ end
 Complete = function (entity)
     -- animal
     SetEntityHealth(entity, 0)
-    FreezeEntityPosition(entity, false)
+    -- FreezeEntityPosition(entity, false)
 
     --hunter
     ClearPedTasks(PlayerPedId())
@@ -395,7 +402,7 @@ Complete = function (entity)
     if Config.Debug then
         print(Lang["hunted"]:format(entity))
     end
-
+    
     -- get the loots for that specific animal
     local loots =  Config.Zones[animalZone].Animals[animalID].loots
     -- we choose a random loot
