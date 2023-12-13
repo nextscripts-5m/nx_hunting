@@ -151,6 +151,8 @@ local spawnAnimals = function (huntZones, zone)
                         Wait(1)
                     end
 
+                    if not isInArea then return end
+
                     local animalNPC = CreatePed(4, hashKey, getRandomCoord(huntZones[zone].radius, huntZones[zone].position, true), 0.0, true, true)
 
                     local blip = createBlipForEntity(animalNPC, .65)
@@ -248,10 +250,11 @@ ConfigureZones = function (huntZones)
                     print(Lang["we-are-not"])
                 end
 
+                isInArea = false
                 removeBlips(AnimalsNPC)
                 removeOptions(AnimalsNPC, ox_options.name)
                 AnimalsNPC = {}
-                isInArea = false
+
             end,
             debug = false
         })
