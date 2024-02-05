@@ -7,8 +7,8 @@ Config.Debug = true
 
 --[[
     you can choose between "ox_lib" and "rprogress"
-]]
-Config.Progress = "rprogress"
+--]]
+Config.Progress = "rpprogress"
 
 Config.MINUTE = 60 * 1000
 Config.SECONDS = 1000
@@ -20,8 +20,22 @@ Config.RadarTime = 5
 
 Config.Item = 'WEAPON_KNIFE'
 
-Config.Zones = {
+Config.MaximumItemsPerKill = 4
 
+Config.Cheater = { -- this will ban the player if enabled for triggering a giveitem trigger
+    Ban = false,
+    BanFunction = function(src)
+        -- server side
+        -- TriggerEvent("ban", src)
+    end,
+}
+
+Config.Items = { -- this is  for protection, add every item that the script can add to the player
+'water',    
+'burger',
+}
+
+Config.Zones = {
     Zone1 = {
         position = vector3(3097.5112, 3515.7256, 123.4812),
         radius = 200.0,
