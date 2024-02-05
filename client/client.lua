@@ -411,7 +411,7 @@ Complete = function (entity)
     -- we choose a random loot
     local loot = loots[math.random(1, #loots)]
     -- get a random quantity
-    local count = math.random(0, 4)
+    local count = math.random(0, Config.MaximumItemsPerKill)
     TriggerServerEvent('giveInventoryItem', loot, count)
 end
 
