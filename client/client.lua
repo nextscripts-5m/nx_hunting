@@ -1,5 +1,14 @@
 local loaded    = false
 
+AddEventHandler('onClientResourceStart', function (resource)
+    if GetCurrentResourceName() == resource then
+        if not ESX.IsPlayerLoaded() then return end
+        ConfigureZones(Config.Zones)
+        ConfigureBlips(Config.Debug, Config.Zones)
+        loaded = true
+    end
+end)
+
 PlayerLoaded = function()
 
     if loaded then return end
@@ -411,8 +420,8 @@ Complete = function (entity)
     -- we choose a random loot
     local loot = loots[math.random(1, #loots)]
     -- get a random quantity
-    local count = math.random(0, 4)
-    TriggerServerEvent('giveInventoryItem', loot, count)
+    local count = math.random(0, Config.MaximumItemsPerKill)
+    TriggerServerEvent('giveInventoryItem', animalZone, loot, count)
 end
 
 --- Commands
