@@ -2,7 +2,11 @@ local loaded    = false
 
 AddEventHandler('onClientResourceStart', function (resource)
     if GetCurrentResourceName() == resource then
-        if not loaded then return end
+        if Framework == "ESX" then
+            if not ESX.IsPlayerLoaded() then return end
+        elseif Framework == "QB" then
+            if not LocalPlayer.state['isLoggedIn'] then return end
+        end
         ConfigureZones(Config.Zones)
         ConfigureBlips(Config.Debug, Config.Zones)
         loaded = true
